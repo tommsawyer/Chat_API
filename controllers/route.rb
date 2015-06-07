@@ -21,6 +21,8 @@ def route_to(destination, data, ws)
       Rooms.create_room(data)
     when 'join'
       Rooms.join_room(data, ws)
+    when 'get_users'
+      Rooms.get_users(data)
 
     # Сообщения
     when 'message'

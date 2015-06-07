@@ -39,8 +39,6 @@ class Rooms
 
     # Пользователь не должен состоять в этой комнате
 
-    puts room_info['id']
-
     return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
 
     $channels.find_by_room(room[:id]).subscribe(ws)
@@ -50,6 +48,22 @@ class Rooms
       :data => {
           :success => true
       }
+    }
+  end
+
+  def Rooms.get_users(room_info)
+    return trigger_error(1, 'Нет полей id, hash') unless room_info.respond_to?('key') &&
+        room_info.key?('id') &&
+        room_info.key?('hash')
+
+    return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
+
+    {
+        :type => 'users',
+        :data => {
+            :id    => room_info['id'],
+            :users => $channels.find_by_room(room_info['id']).get_authorized_users,
+        }
     }
   end
 

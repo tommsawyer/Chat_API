@@ -1,7 +1,8 @@
 require 'em-websocket'
+require_relative 'models/user'
 
 class Listener
-  attr_accessor :sid, :websocket
+  attr_accessor :sid, :websocket, :user_id, :nickname
 end
 
 class Channel
@@ -14,8 +15,13 @@ class Channel
     self.room_id = room_id
   end
 
-  def subscribe(websocket)
+  def subscribe(websocket, user_id=nil)
     listener = Listener.new
+    listener.user_id = user_id
+    listener.nickname = User.find_by(id: user_id)
+    if listener.nickname
+      listener.nickname = listener.nickname[:login]
+    end
     listener.websocket = websocket
     listener.sid = self.channel.subscribe {|msg| listener.websocket.send msg}
     self.listeners << listener
@@ -38,6 +44,19 @@ class Channel
 
   def number_of_listeners
     self.listeners.length
+  end
+
+  def get_authorized_users
+    users = []
+    listeners.each do |listener|
+        if listener.user_id
+          users << {
+              :id       => listener.user_id,
+              :nickname => listener.nickname
+          }
+        end
+    end
+    users
   end
 end
 
