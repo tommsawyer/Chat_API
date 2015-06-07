@@ -42,7 +42,7 @@ class Auth
     {:type => 'auth_success',
      :data => {
          :nickname => user['login'],
-         :hash => user['password']
+         :hash     => user['password']
      }
     }
   end

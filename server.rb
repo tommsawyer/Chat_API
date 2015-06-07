@@ -1,12 +1,11 @@
-require 'em-websocket'
-require 'json'
-require 'date'
+require          'em-websocket'
+require          'json'
+require          'date'
 require_relative 'common'
 require_relative 'controllers/route'
 
 
 def generate_answer(msg, ws)
-
   begin
     message = JSON.parse msg
   rescue
@@ -32,8 +31,6 @@ def start_server(host, port, version)
       }
     end
     EM::WebSocket.run(:host => host, :port => port) do |ws|
-
-
       ws.onopen {
         ws.send JSON.generate({:type => 'joined',
                                :data => {
@@ -46,7 +43,7 @@ def start_server(host, port, version)
 
         # Система роутинга:
         # Приходящий запрос от клиента направляется в generate_answer, где запрос первично проверяется
-        # на правильность формата, затем перенаправляется в route_to, где хранится хэш "тип запроса" - "функция".
+        # на правильность формата, затем перенаправляется в route_to, где хранится хэш "тип запроса" - "функция". (ссылки на методы?)
         # Вызвается функция, соответствующая типу запроса, в которую передается тело запроса. Она формирует ответ
         # клиенту, который передается вверх по цепочке обратно в обработчик onmessage.
         # На весь цикл повесим хук эксепшенов, чтобы в случае чего сервер не упал
