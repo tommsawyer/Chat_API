@@ -40,8 +40,11 @@ class Rooms
     # Пользователь не должен состоять в этой комнате
 
     return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
+    if room_info.key?('hash')
+      user = User.find_by(login: decrypt_hash(room_info['hash']))
+    end
 
-    $channels.find_by_room(room[:id]).subscribe(ws)
+    $channels.find_by_room(room[:id]).subscribe(ws, (user == nil) ? nil : user[:id])
 
     {
       :type => 'join',
@@ -57,12 +60,11 @@ class Rooms
         room_info.key?('hash')
 
     return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
-
     {
         :type => 'users',
         :data => {
             :id    => room_info['id'],
-            :users => $channels.find_by_room(room_info['id']).get_authorized_users,
+            :users => $channels.find_by_room(room_info['id'].to_i).get_authorized_users,
         }
     }
   end

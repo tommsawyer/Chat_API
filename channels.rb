@@ -20,17 +20,35 @@ class Channel
     listener.user_id = user_id
     listener.nickname = User.find_by(id: user_id)
     if listener.nickname
+      self.channel.push(JSON.generate({
+                            :type => 'user_join',
+                            :data => {
+                                :nickname => listener.nickname[:login],
+                                :id => listener.nickname[:id]
+                            }
+                        }))
       listener.nickname = listener.nickname[:login]
     end
     listener.websocket = websocket
-    listener.sid = self.channel.subscribe {|msg| listener.websocket.send msg}
+    listener.sid = self.channel.subscribe { |msg| listener.websocket.send msg }
     self.listeners << listener
+
+
   end
 
   def unsubscribe(websocket)
     self.listeners.each {
-      |listener|
+        |listener|
       if listener.websocket == websocket
+        if listener.user_id
+          self.channel.push(JSON.generate({
+                                              :type => 'user_leave',
+                                              :data => {
+                                                  :nickname => listener.nickname,
+                                                  :id => listener.user_id
+                                              }
+                                          }))
+        end
         self.channel.unsubscribe(listener.sid)
         listeners.delete(listener)
         break
@@ -49,12 +67,12 @@ class Channel
   def get_authorized_users
     users = []
     listeners.each do |listener|
-        if listener.user_id
-          users << {
-              :id       => listener.user_id,
-              :nickname => listener.nickname
-          }
-        end
+      if listener.user_id
+        users << {
+            :id => listener.user_id,
+            :nickname => listener.nickname
+        }
+      end
     end
     users
   end
@@ -82,13 +100,12 @@ class Channels
 
   def find_by_room(room_id)
     channels.each do |channel|
-        return channel if channel.room_id == room_id
+      return channel if channel.room_id == room_id
     end
     nil
   end
 
   def unsubscribe(websocket)
-    p channels
     self.channels.each do |channel|
       channel.unsubscribe(websocket)
     end
