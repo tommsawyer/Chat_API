@@ -3,6 +3,7 @@ require          'json'
 require          'date'
 require_relative 'common'
 require_relative 'controllers/route'
+require_relative 'channels'
 
 
 def generate_answer(msg, ws)
@@ -21,16 +22,16 @@ end
 
 def start_server(host, port, version)
   EM.run {
-    $channels = []
+    $channels = Channels.new
 
     # Создание каналов для комнат, которые уже есть в БД при запуске сервера
-    Room.all.each do |rm|
-      $channels << {
-          :id => rm[:id],
-          :channel => EM::Channel.new
-      }
+    Room.all.each do |room|
+      $channels.create_channel(room[:creator], room[:id])
     end
+
     EM::WebSocket.run(:host => host, :port => port) do |ws|
+      sids = []
+
       ws.onopen {
         ws.send JSON.generate({:type => 'joined',
                                :data => {
@@ -59,6 +60,7 @@ def start_server(host, port, version)
 
       ws.onclose {
         # отписываем клиента от всех комнат
+        $channels.unsubscribe ws
       }
     end
 

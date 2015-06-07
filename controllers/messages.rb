@@ -12,21 +12,14 @@ class Message
 
     return trigger_error(14, 'Недостаточно прав') unless have_rights_usr?(message_info)
 
-    channel = nil
-
-    $channels.each { |chann|
-      if chann[:id] == message_info['id']
-        channel = chann[:channel]
-        break
-      end
-    }
+    channel = $channels.find_by_room(message_info['id'])
 
     return trigger_error(14, 'Нет такой комнаты') unless channel
 
     channel.push(JSON.generate({
       :type => 'message',
       :data => {
-          :id       => message_info['id'],
+          :room_id       => message_info['id'],
           :nickname => User.find_by(login: decrypt_hash(message_info['hash']))[:login],
           :message  => message_info['message']
       }

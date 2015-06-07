@@ -20,18 +20,14 @@ class Rooms
             name: room_info['name'],
             creator: creator['id'],
             roomType: room_info['type']
-    )[:id]
+    )[:room_id]
 
-    $channels << {
-        :id      => id,
-        :channel => $EM.Channel.new
-    }
-
+    $channels.create_channel(creator[:id], id)
 
     {
       :type => 'create_success',
       :data => {
-          :id => id
+          :room_id => id
       }
     }
 
@@ -43,14 +39,11 @@ class Rooms
 
     # Пользователь не должен состоять в этой комнате
 
+    puts room_info['id']
+
     return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
 
-    $channels.each do |e|
-      if e[:id] == room_info['id'].to_i
-        sid = e[:channel].subscribe {|msg| ws.send msg}
-        break
-      end
-    end
+    $channels.find_by_room(room[:id]).subscribe(ws)
 
     {
       :type => 'join',
@@ -58,6 +51,9 @@ class Rooms
           :success => true
       }
     }
+  end
+
+  def Rooms.exit_room()
 
   end
 
@@ -72,7 +68,7 @@ class Rooms
     if room_info['start']==0 && room_info['end']==0
       Room.all.each do |u|
         rooms << {
-            :id => u[:id],
+            :room_id => u[:id],
             :name => u[:name],
             :type => u[:roomType]
         }
@@ -93,7 +89,7 @@ class Rooms
 
     Room.where(id: room_info['start']..room_info['end']).each do |u|
       rooms << {
-          :id => u[:id],
+          :room_id => u[:id],
           :name => u[:name],
           :type => u[:roomType]
       }
