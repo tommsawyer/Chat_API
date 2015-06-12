@@ -2,11 +2,12 @@ require          'em-websocket'
 require          'json'
 require          'date'
 require_relative 'common'
-require_relative 'controllers/route'
+require_relative 'routes/route'
 require_relative 'channels'
 
 
 def generate_answer(msg, ws)
+
   begin
     message = JSON.parse msg
   rescue
@@ -17,21 +18,20 @@ def generate_answer(msg, ws)
     return trigger_error(1, 'Запрос имеет некорректную структуру')
   end
 
-  route_to(message['type'], message['data'], ws)
+  $routes.route_to(message, ws)
 end
 
 def start_server(host, port, version)
+  $routes = Route.instance
+
   EM.run {
     $channels = Channels.new
-
     # Создание каналов для комнат, которые уже есть в БД при запуске сервера
     Room.all.each do |room|
       $channels.create_channel(room[:creator], room[:id])
     end
 
     EM::WebSocket.run(:host => host, :port => port) do |ws|
-      sids = []
-
       ws.onopen {
         ws.send JSON.generate({:type => 'joined',
                                :data => {
@@ -41,15 +41,6 @@ def start_server(host, port, version)
       }
 
       ws.onmessage { |msg|
-
-        # Система роутинга:
-        # Приходящий запрос от клиента направляется в generate_answer, где запрос первично проверяется
-        # на правильность формата, затем перенаправляется в route_to, где хранится хэш "тип запроса" - "функция". (ссылки на методы?)
-        # Вызвается функция, соответствующая типу запроса, в которую передается тело запроса. Она формирует ответ
-        # клиенту, который передается вверх по цепочке обратно в обработчик onmessage.
-        # На весь цикл повесим хук эксепшенов, чтобы в случае чего сервер не упал
-        # Сделать фильтры для авторизации.
-
         begin
           ws.send JSON.generate(generate_answer(msg, ws))
         rescue Exception => e

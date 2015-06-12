@@ -1,17 +1,11 @@
 require_relative '../common'
+require          'singleton'
 
 class Auth
+  include Singleton
 
-  def is_correct_login?(login)
-    login.to_s.length>5 && login =~ /\w/
-  end
 
-  def Auth.register(user_info)
-    return trigger_error(1, 'Нет полей login, password, email') unless user_info.respond_to?('key') &&
-        user_info.key?('login') &&
-        user_info.key?('password') &&
-        user_info.key?('email')
-
+  def register(user_info, ws)
     return trigger_error(11, 'Некорректный логин') unless is_correct_login? user_info['login']
     return trigger_error(10, 'Пользователь с таким никнеймом уже существует') if User.find_by(login: user_info['login'])
 
@@ -32,10 +26,7 @@ class Auth
     }
   end
 
-  def Auth.authorize(user_info)
-    return trigger_error(1, 'Нет полей login, password') unless user_info.respond_to?('key') &&
-        user_info.key?('login') &&
-        user_info.key?('password')
+  def authorize(user_info, ws)
     return trigger_error(12, 'Пользователя с таким логином не существует') unless user = User.find_by(login: user_info['login'])
     return trigger_error(13, 'Неправильный пароль') unless user['password'] == crypt_hash(user_info['password'])
 
@@ -45,5 +36,11 @@ class Auth
          :hash     => user['password']
      }
     }
+  end
+
+private
+
+  def is_correct_login?(login)
+    login.to_s.length>5 && login =~ /\w/
   end
 end

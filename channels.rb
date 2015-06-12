@@ -87,6 +87,7 @@ class Channels
 
   def create_channel(creator, room_id)
     self.channels << Channel.new(creator, room_id)
+    p channels
   end
 
   def remove_channel(room_id)
@@ -99,7 +100,7 @@ class Channels
   end
 
   def find_by_room(room_id)
-    channels.each do |channel|
+    self.channels.each do |channel|
       return channel if channel.room_id == room_id
     end
     nil

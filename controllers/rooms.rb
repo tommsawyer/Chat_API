@@ -1,42 +1,33 @@
-require_relative '../common'
+
 require_relative '../models/room'
 require_relative '../models/user_role'
 require_relative '../models/user_room'
-require_relative '../models/user_room'
-
+require          'singleton'
 
 class Rooms
+  include Singleton
 
-  def Rooms.create_room(room_info)
-    return trigger_error(1, 'Нет полей hash, name, type') unless room_info.respond_to?('key') &&
-        room_info.key?('hash') &&
-        room_info.key?('name') &&
-        room_info.key?('type')
-    return trigger_error(14, 'Недостаточно прав') unless have_rights_usr?(room_info)
-
+  def create_room(room_info, ws)
     creator = User.find_by(login: decrypt_hash(room_info['hash']))
 
     id = Room.create(
             name: room_info['name'],
             creator: creator['id'],
             roomType: room_info['type']
-    )[:room_id]
+    )[:id]
 
     $channels.create_channel(creator[:id], id)
 
     {
       :type => 'create_success',
       :data => {
-          :room_id => id
+          :id => id
       }
     }
 
   end
 
-  def Rooms.join_room(room_info, ws)
-    return trigger_error(1, 'Нет полей id') unless room_info.respond_to?('key') &&
-        room_info.key?('id')
-
+  def join_room(room_info, ws)
     # Пользователь не должен состоять в этой комнате
 
     return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
@@ -54,10 +45,7 @@ class Rooms
     }
   end
 
-  def Rooms.get_users(room_info)
-    return trigger_error(1, 'Нет полей id, hash') unless room_info.respond_to?('key') &&
-        room_info.key?('id') &&
-        room_info.key?('hash')
+  def get_users(room_info, ws)
 
     return trigger_error(20, 'Нет такой комнаты!') unless room = Room.find_by(id: room_info['id'])
     {
@@ -69,15 +57,11 @@ class Rooms
     }
   end
 
-  def Rooms.exit_room()
+  def exit_room()
 
   end
 
-  def Rooms.get_rooms(room_info)
-    return trigger_error(1, 'Нет полей start или end') unless room_info.respond_to?('key') &&
-        room_info.has_key?('start') &&
-        room_info.has_key?('end')
-
+  def get_rooms(room_info, ws)
     rooms = []
     count = 0
 

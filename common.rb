@@ -7,6 +7,10 @@ def trigger_error(code, message)
   }
 end
 
+def create_message(type)
+  # сообщение
+end
+
 def crypt_hash(password)
   # генерирует хэш
   password
@@ -17,14 +21,4 @@ def decrypt_hash(str)
   str
 end
 
-def have_rights_usr?(data)
-  User.find_by(login: decrypt_hash(data['hash'])) != nil
-end
 
-def have_rights_adm?(data)
-  true
-end
-
-def have_rights_moder?(data)
-  true
-end
