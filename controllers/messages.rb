@@ -8,6 +8,7 @@ class Message
     channel = $channels.find_by_room(message_info['id'])
 
     return trigger_error(14, 'Нет такой комнаты') unless channel
+    return trigger_error(14, 'Недостаточно прав') unless $channels.in_room?(channel, ws)
 
     channel.push(JSON.generate({
       :type => 'message',
@@ -24,5 +25,4 @@ class Message
     }
 
   end
-
 end

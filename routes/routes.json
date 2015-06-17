@@ -1,0 +1,73 @@
+[
+  {
+    "type": "register",
+    "require_fields": [
+      "login",
+      "password"
+    ],
+    "require_rights": 0,
+    "controller": "auth",
+    "method": "register"
+  },
+  {
+    "type": "auth",
+    "require_fields": [
+      "login",
+      "password"
+    ],
+    "require_rights": 0,
+    "controller": "auth",
+    "method": "authorize"
+  },
+  {
+    "type": "message",
+    "require_fields": [
+      "id",
+      "hash",
+      "message"
+    ],
+    "require_rights": 1,
+    "controller": "messages",
+    "method": "send_msg"
+  },
+  {
+    "type": "create_room",
+    "require_fields": [
+      "name",
+      "hash",
+      "type"
+    ],
+    "require_rights": 1,
+    "controller": "rooms",
+    "method": "create_room"
+  },
+  {
+    "type": "get_rooms",
+    "require_fields": [
+      "start",
+      "end"
+    ],
+    "require_rights": 0,
+    "controller": "rooms",
+    "method": "get_rooms"
+  },
+  {
+    "type": "join",
+    "require_fields": [
+      "id",
+      "hash"
+    ],
+    "require_rights": 0,
+    "controller": "rooms",
+    "method": "join_room"
+  },
+  {
+    "type": "get_users",
+    "require_fields": [
+      "id"
+    ],
+    "require_rights": 0,
+    "controller": "rooms",
+    "method": "get_users"
+  }
+]

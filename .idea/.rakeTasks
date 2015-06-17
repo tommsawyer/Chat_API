@@ -4,4 +4,4 @@ You are allowed to:
 1. Remove rake task
 2. Add existing rake tasks
 To add existing rake tasks automatically delete this file and reload the project.
---><RakeGroup description="" fullCmd="" taksId="rake"><RakeGroup description="" fullCmd="" taksId="db"><RakeTask description="" fullCmd="db:migrate" taksId="migrate" /><RakeTask description="" fullCmd="db:rollback" taksId="rollback" /></RakeGroup></RakeGroup></Settings>
+--><RakeGroup description="" fullCmd="" taksId="rake"><RakeGroup description="" fullCmd="" taksId="db"><RakeTask description="" fullCmd="db:migrate" taksId="migrate" /><RakeTask description="" fullCmd="db:rollback" taksId="rollback" /></RakeGroup><RakeGroup description="" fullCmd="" taksId="rs"><RakeTask description="" fullCmd="rs:add" taksId="add" /><RakeTask description="" fullCmd="rs:clear" taksId="clear" /><RakeTask description="" fullCmd="rs:delete" taksId="delete" /><RakeTask description="" fullCmd="rs:show" taksId="show" /></RakeGroup></RakeGroup></Settings>

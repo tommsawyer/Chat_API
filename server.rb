@@ -1,6 +1,7 @@
 require          'em-websocket'
 require          'json'
 require          'date'
+require          'firebase_token_generator'
 require_relative 'common'
 require_relative 'routes/route'
 require_relative 'channels'
@@ -22,11 +23,14 @@ def generate_answer(msg, ws)
 end
 
 def start_server(host, port, version)
+
   $routes = Route.instance
+  $generator = Firebase::FirebaseTokenGenerator.new("asdfghjlk")
 
   EM.run {
     $channels = Channels.new
     # Создание каналов для комнат, которые уже есть в БД при запуске сервера
+
     Room.all.each do |room|
       $channels.create_channel(room[:creator], room[:id])
     end

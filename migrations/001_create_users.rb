@@ -6,8 +6,9 @@ class CreateUsers < ActiveRecord::Migration
   def self.up
     create_table :users do |t|
       t.string :login
-      t.string :password
+      t.string :password_hash
       t.string :email
+      t.string :token
     end
   end
 

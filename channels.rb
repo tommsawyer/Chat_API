@@ -111,4 +111,11 @@ class Channels
       channel.unsubscribe(websocket)
     end
   end
+
+  def in_room?(channel, websocket)
+    channel.listeners.each do |listener|
+      return true if listener.websocket == websocket
+    end
+    false
+  end
 end
