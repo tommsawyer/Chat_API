@@ -4,6 +4,7 @@ require          'singleton'
 require_relative '../controllers/messages'
 require_relative '../controllers/rooms'
 require_relative '../controllers/auth'
+require_relative '../controllers/requests'
 require_relative '../common'
 
 class Route
@@ -12,13 +13,15 @@ class Route
   def initialize
     @routes = JSON.parse(File.read('routes/routes.json'))
 
-    @messages = Message.instance
+    @messages = Messages.instance
     @rooms = Rooms.instance
     @auth = Auth.instance
+    @requests = Requests.instance
 
     @controllers = {
         'rooms'    => @rooms,
         'messages' => @messages,
+        'requests' => @requests,
         'auth'     => @auth
     }
   end
@@ -35,10 +38,16 @@ class Route
     route['require_fields'].each do |field|
       return false unless data.has_key?(field)
     end
-    return true
+
+    true
   end
 
-  def check_rights(token, room, route)
+  def check_room_rights(userid, roomid)
+
+
+  end
+
+  def check_rights(token, roomid, route)
     # 0 - гость
     # 1 - пользователь
     # 2 - модератор
@@ -57,18 +66,18 @@ class Route
       end
     end
 
-    return rights >= route['require_rights']
+    return rights >= route['require_rights'].to_i
   end
 
   def route_to(request, ws)
     route = type_exists?(request['type'])
     data = request['data']
-
+    p request
     return trigger_error(2, 'Неизвестный тип запроса') unless route
     return trigger_error(1, 'Нет необходимых полей') unless check_require_fields(data, route)
     return trigger_error(14, 'Недостаточно прав') unless check_rights(data['token'], data['room_id'], route)
 
-    @controllers[route['controller']].send(route['method'], data, ws)
+    p @controllers[route['controller']].send(route['method'], data, ws)
 
   end
 

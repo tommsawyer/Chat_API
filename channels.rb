@@ -15,7 +15,7 @@ class Channel
     self.room_id = room_id
   end
 
-  def subscribe(websocket, user_id=nil)
+  def subscribe(websocket, user_id = nil)
     listener = Listener.new
     listener.user_id = user_id
     listener.nickname = User.find_by(id: user_id)
@@ -91,7 +91,7 @@ class Channels
   end
 
   def remove_channel(room_id)
-    channels.each do |channel|
+    self.channels.each do |channel|
       if channel.room_id == room_id
         channels.delete(channel)
         break
@@ -116,6 +116,7 @@ class Channels
     channel.listeners.each do |listener|
       return true if listener.websocket == websocket
     end
+
     false
   end
 end

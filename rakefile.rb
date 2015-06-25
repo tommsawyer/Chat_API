@@ -81,7 +81,7 @@ namespace :rs do
           puts "Тип             : #{route['type']}"
           puts "Контроллер      : #{route['controller']}"
           puts "Метод           : #{route['method']}"
-          puts "Требуемые права : #{route['require_rights'].empty? ? 'нет' : route['require_rights']}"
+          puts "Требуемые права : #{route['require_rights']}"
           puts "Требуемые поля  : #{route['require_fields']}"
           puts '====================================================================================='
           break

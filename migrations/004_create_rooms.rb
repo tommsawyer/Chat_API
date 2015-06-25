@@ -10,7 +10,7 @@ class CreateRooms < ActiveRecord::Migration
       t.integer :roomType
     end
 
-    create_table :roomTypes do |t|
+    create_table :room_types do |t|
       t.string :name
     end
 
@@ -19,8 +19,9 @@ class CreateRooms < ActiveRecord::Migration
     end
 
     create_table :user_rooms do |t|
-      t.string :user
-      t.string :room
+      t.integer :user
+      t.integer :room
+      t.integer :role
     end
 
     create_table :user_roles do |t|
@@ -28,15 +29,10 @@ class CreateRooms < ActiveRecord::Migration
       t.integer :role
     end
 
-    create_table :roomRights do |t|
-      t.integer :user_role
-    end
-
     create_table :messages do |t|
       t.integer :sender
       t.integer :recipient
       t.string  :message
-
     end
   end
 
@@ -46,7 +42,6 @@ class CreateRooms < ActiveRecord::Migration
     drop_table :roles
     drop_table :user_rooms
     drop_table :user_roles
-    drop_table :roomRights
     drop_table :messages
   end
 end

@@ -22,8 +22,8 @@
   {
     "type": "message",
     "require_fields": [
-      "id",
-      "hash",
+      "room_id",
+      "token",
       "message"
     ],
     "require_rights": 1,
@@ -34,7 +34,7 @@
     "type": "create_room",
     "require_fields": [
       "name",
-      "hash",
+      "token",
       "type"
     ],
     "require_rights": 1,
@@ -54,8 +54,7 @@
   {
     "type": "join",
     "require_fields": [
-      "id",
-      "hash"
+      "room_id"
     ],
     "require_rights": 0,
     "controller": "rooms",
@@ -64,10 +63,59 @@
   {
     "type": "get_users",
     "require_fields": [
-      "id"
+      "room_id"
     ],
     "require_rights": 0,
     "controller": "rooms",
     "method": "get_users"
+  },
+  {
+    "type": "invite",
+    "require_fields": [
+      "token",
+      "room_id",
+      "user"
+    ],
+    "require_rights": "1",
+    "controller": "requests",
+    "method": "invite"
+  },
+  {
+    "type": "confirm",
+    "require_fields": [
+      "token",
+      "request"
+    ],
+    "require_rights": "1",
+    "controller": "requests",
+    "method": "confirm"
+  },
+  {
+    "type": "get_requests",
+    "require_fields": [
+      "token"
+    ],
+    "require_rights": "1",
+    "controller": "requests",
+    "method": "get_requests"
+  },
+  {
+    "type": "exit",
+    "require_fields": [
+      "room_id"
+    ],
+    "require_rights": 0,
+    "controller": "rooms",
+    "method": "exit_room"
+  },
+  {
+    "type": "request",
+    "require_fields": [
+      "token",
+      "room_id"
+    ],
+    "require_rights": "1",
+    "controller": "requests",
+    "method": "request"
   }
 ]

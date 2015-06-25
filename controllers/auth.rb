@@ -40,6 +40,9 @@ class Auth
                                         :password => user_info['password']
                                     })
 
+    user.token = token
+    user.save
+
     {:type => 'auth_success',
      :data => {
          :nickname => user['login'],
